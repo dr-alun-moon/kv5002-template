@@ -6,8 +6,8 @@ LDLIBS=-pthread
 DEPS=libcounter.c   #list of additional local .c files
 OBJS=$(DEPS:.c=.o)
 
-example: main.o $(OBJS)
-	$(CC) -o example main.o $(OBJS) $(LDLIBS)
+example: example.o $(OBJS)
+
 
 .PHONY: clean
 
