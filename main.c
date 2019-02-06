@@ -6,40 +6,34 @@
 #include <pthread.h>
 #include <signal.h>
 
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "libcounter.h"
+
 pthread_t a,b;
-
-void *incrementer(void *param)
-{
-	int delta = *(int*)param;
-
-}
 
 void endprog(int sig)
 {
 	pthread_kill(a, SIGTERM);
 	pthread_kill(b, SIGTERM);
+	exit(EXIT_SUCCESS);
 }
 
 
-struct foreach {
-	int init;
-	int incr;
-};
-
 int main ( int argc , char *argv[] )
 {
-	/*
-	int up   =  1 ;
-	int down = -1 ;
-	*/
-	struct foreach up = {.init=5, .incr=1};
-	struct foreach down = {.init=5, .incr=1};
+	/* latest C versions allow neat struct initialisers */
+	struct count_t up = {.incr=1, .delay=1000 };
+	struct count_t down = {.incr=-1, .delay=1000};
 
 	signal(SIGTERM, endprog); /* signal handler for TERMinate - quit signals */
 	signal(SIGINT, endprog);  /* signal handler for INTerupt Ctrl-C */
 
-	pthread_create( &a, NULL, incrementer, &up );
-	pthread_create( &b, NULL, incrementer, &down );
+	puts("creating threads");
+
+	pthread_create( &a, NULL, counter, &up );
+	pthread_create( &b, NULL, counter, &down );
 
 	pthread_join(a, NULL);
 }
